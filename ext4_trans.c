@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015 Grzegorz Kostka (kostka.grzegorz@gmail.com)
+ * Copyright (c) 2015 Kaho Ng (ngkaho1234@gmail.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +27,81 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef BLOCKDEV_H_
-#define BLOCKDEV_H_
+/** @addtogroup lwext4
+ * @{
+ */
+/**
+ * @file  ext4_trans.c
+ * @brief Ext4 transaction buffer operations.
+ */
 
 #include <ext4_config.h>
-#include <ext4_blockdev.h>
+#include <ext4_types.h>
+#include <ext4_misc.h>
+#include <ext4_errno.h>
+#include <ext4_debug.h>
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <ext4_fs.h>
+#include <ext4_journal.h>
 
-/**@brief   File blockdev get.*/
-struct ext4_blockdev *ext4_blockdev_get(void);
+int ext4_trans_set_block_dirty(struct ext4_buf *buf)
+{
+	int r = EOK;
+#if CONFIG_JOURNALING_ENABLE
+	struct ext4_fs *fs = buf->bc->bdev->fs;
+	struct ext4_block block = {
+		.lb_id = buf->lba,
+		.data = buf->data,
+		.buf = buf
+	};
 
-#endif /* BLOCKDEV_H_ */
+	if (fs->jbd_journal && fs->curr_trans) {
+		struct jbd_trans *trans = fs->curr_trans;
+		return jbd_trans_set_block_dirty(trans, &block);
+	}
+#endif
+	ext4_bcache_set_dirty(buf);
+	return r;
+}
+
+int ext4_trans_block_get_noread(struct ext4_blockdev *bdev,
+			  struct ext4_block *b,
+			  uint64_t lba)
+{
+	int r = ext4_block_get_noread(bdev, b, lba);
+	if (r != EOK)
+		return r;
+
+	return r;
+}
+
+int ext4_trans_block_get(struct ext4_blockdev *bdev,
+		   struct ext4_block *b,
+		   uint64_t lba)
+{
+	int r = ext4_block_get(bdev, b, lba);
+	if (r != EOK)
+		return r;
+
+	return r;
+}
+
+int ext4_trans_try_revoke_block(struct ext4_blockdev *bdev __unused,
+			        uint64_t lba __unused)
+{
+	int r = EOK;
+#if CONFIG_JOURNALING_ENABLE
+	struct ext4_fs *fs = bdev->fs;
+	if (fs->jbd_journal && fs->curr_trans) {
+		struct jbd_trans *trans = fs->curr_trans;
+		r = jbd_trans_try_revoke_block(trans, lba);
+	} else if (fs->jbd_journal) {
+		r = ext4_block_flush_lba(fs->bdev, lba);
+	}
+#endif
+	return r;
+}
+
+/**
+ * @}
+ */

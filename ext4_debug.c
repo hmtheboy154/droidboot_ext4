@@ -25,20 +25,42 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef FILE_WINDOWS_H_
-#define FILE_WINDOWS_H_
+
+/** @addtogroup lwext4
+ * @{
+ */
+/**
+ * @file  ext4_debug.c
+ * @brief Debug printf and assert macros.
+ */
 
 #include <ext4_config.h>
-#include <ext4_blockdev.h>
+#include <ext4_types.h>
+#include <ext4_misc.h>
+#include <ext4_errno.h>
+#include <ext4_debug.h>
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <stdarg.h>
 
-/**@brief   IO raw blockdev get.*/
-struct ext4_blockdev *file_windows_dev_get(void);
+static uint32_t debug_mask;
 
-/**@brief   Set filrname to open.*/
-void file_windows_name_set(const char *n);
+void ext4_dmask_set(uint32_t m)
+{
+	debug_mask |= m;
+}
+
+void ext4_dmask_clr(uint32_t m)
+{
+	debug_mask &= ~m;
+}
+
+uint32_t ext4_dmask_get(void)
+{
+	return debug_mask;
+}
 
 
-#endif /* FILE_WINDOWS_H_ */
+
+/**
+ * @}
+ */
