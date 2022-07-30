@@ -25,4 +25,4 @@ OBJS += \
 	$(LOCAL_DIR)/ext4_super.o \
 	$(LOCAL_DIR)/ext4_trans.o
 	
-INCLUDES += "-I$(LOCAL_DIR)include"
+INCLUDES += "-I$(LOCAL_DIR)/include"

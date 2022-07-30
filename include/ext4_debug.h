@@ -149,11 +149,7 @@ uint32_t ext4_dmask_get(void);
 	do {                                                                   \
 		if ((m) & ext4_dmask_get()) {                                  \
 			if (!((m) & DEBUG_NOPREFIX)) {                         \
-				printf("%s", ext4_dmask_id2str(m));            \
-				printf("l: %d   ", __LINE__);                  \
 			}                                                      \
-			printf(__VA_ARGS__);                                   \
-			fflush(stdout);                                        \
 		}                                                              \
 	} while (0)
 #else
@@ -168,8 +164,6 @@ uint32_t ext4_dmask_get(void);
 #define ext4_assert(_v)                                                        \
 	do {                                                                   \
 		if (!(_v)) {                                                   \
-			printf("assertion failed:\nfile: %s\nline: %d\n",      \
-			       __FILE__, __LINE__);                            \
 			       while (1)				       \
 				       ;				       \
 		}                                                              \
