@@ -47,6 +47,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <droidboot_error.h>
+#include <droidboot_logging.h>
+
 static void ext4_bdif_lock(struct ext4_blockdev *bdev)
 {
 	if (!bdev->bdif->lock)
@@ -66,9 +69,10 @@ static void ext4_bdif_unlock(struct ext4_blockdev *bdev)
 }
 
 static int ext4_bdif_bread(struct ext4_blockdev *bdev, void *buf,
-			   uint64_t blk_id, uint32_t blk_cnt)
+			   uint32_t blk_id, uint32_t blk_cnt)
 {
 	ext4_bdif_lock(bdev);
+	droidboot_log(DROIDBOOT_LOG_TRACE, "ext4_bdif_bread clled, id:%d, cnt:%d\n", blk_id, blk_cnt);
 	int r = bdev->bdif->bread(bdev, buf, blk_id, blk_cnt);
 	bdev->bdif->bread_ctr++;
 	ext4_bdif_unlock(bdev);
@@ -306,10 +310,10 @@ int ext4_blocks_set_direct(struct ext4_blockdev *bdev, const void *buf,
 	return ext4_bdif_bwrite(bdev, buf, pba, pb_cnt * cnt);
 }
 
-int ext4_block_writebytes(struct ext4_blockdev *bdev, uint64_t off,
+int ext4_block_writebytes(struct ext4_blockdev *bdev, uint32_t off,
 			  const void *buf, uint32_t len)
 {
-	uint64_t block_idx;
+	uint32_t block_idx;
 	uint32_t blen;
 	uint32_t unalg;
 	int r = EOK;
@@ -376,10 +380,10 @@ int ext4_block_writebytes(struct ext4_blockdev *bdev, uint64_t off,
 	return r;
 }
 
-int ext4_block_readbytes(struct ext4_blockdev *bdev, uint64_t off, void *buf,
+int ext4_block_readbytes(struct ext4_blockdev *bdev, uint32_t off, void *buf,
 			 uint32_t len)
 {
-	uint64_t block_idx;
+	uint32_t block_idx;
 	uint32_t blen;
 	uint32_t unalg;
 	int r = EOK;
@@ -395,7 +399,7 @@ int ext4_block_readbytes(struct ext4_blockdev *bdev, uint64_t off, void *buf,
 		return EINVAL; /*Ups. Out of range operation*/
 
 	block_idx = ((off + bdev->part_offset) / bdev->bdif->ph_bsize);
-
+    
 	/*OK lets deal with the first possible unaligned block*/
 	unalg = (off & (bdev->bdif->ph_bsize - 1));
 	if (unalg) {

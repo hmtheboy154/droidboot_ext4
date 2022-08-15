@@ -56,7 +56,7 @@ struct ext4_blockdev_iface {
 	 * @param   buf output buffer
 	 * @param   blk_id block id
 	 * @param   blk_cnt block count*/
-	int (*bread)(struct ext4_blockdev *bdev, void *buf, uint64_t blk_id,
+	int (*bread)(struct ext4_blockdev *bdev, void *buf, uint32_t blk_id,
 		     uint32_t blk_cnt);
 
 	/**@brief   Block write function.
@@ -64,7 +64,7 @@ struct ext4_blockdev_iface {
 	 * @param   blk_id block id
 	 * @param   blk_cnt block count*/
 	int (*bwrite)(struct ext4_blockdev *bdev, const void *buf,
-		      uint64_t blk_id, uint32_t blk_cnt);
+		      uint32_t blk_id, uint32_t blk_cnt);
 
 	/**@brief   Close device function.
 	 * @param   bdev block device.*/
@@ -233,7 +233,7 @@ int ext4_blocks_set_direct(struct ext4_blockdev *bdev, const void *buf,
  * @param   buf input buffer
  * @param   len length of the write buffer
  * @return  standard error code*/
-int ext4_block_writebytes(struct ext4_blockdev *bdev, uint64_t off,
+int ext4_block_writebytes(struct ext4_blockdev *bdev, uint32_t off,
 			  const void *buf, uint32_t len);
 
 /**@brief   Read freom block device (by direct address).
@@ -242,7 +242,7 @@ int ext4_block_writebytes(struct ext4_blockdev *bdev, uint64_t off,
  * @param   buf input buffer
  * @param   len length of the write buffer
  * @return  standard error code*/
-int ext4_block_readbytes(struct ext4_blockdev *bdev, uint64_t off, void *buf,
+int ext4_block_readbytes(struct ext4_blockdev *bdev, uint32_t off, void *buf,
 			 uint32_t len);
 
 /**@brief   Flush all dirty buffers to disk

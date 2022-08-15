@@ -58,6 +58,9 @@
 
 #include <string.h>
 
+#include <droidboot_error.h>
+#include <droidboot_logging.h>
+
 int ext4_fs_init(struct ext4_fs *fs, struct ext4_blockdev *bdev,
 		 bool read_only)
 {
@@ -75,8 +78,10 @@ int ext4_fs_init(struct ext4_fs *fs, struct ext4_blockdev *bdev,
 	if (r != EOK)
 		return r;
 
-	if (!ext4_sb_check(&fs->sb))
+	if (!ext4_sb_check(&fs->sb)){
+	    droidboot_log(DROIDBOOT_LOG_ERROR, "Ext4 superblock check failed\n");
 		return ENOTSUP;
+	}
 
 	bsize = ext4_sb_get_block_size(&fs->sb);
 	if (bsize > EXT4_MAX_BLOCK_SIZE)
@@ -232,6 +237,7 @@ int ext4_fs_check_features(struct ext4_fs *fs, bool *read_only)
 		ext4_dbg(DEBUG_FS, DBG_ERROR
 				"sblock has unsupported features incompatible:\n");
 		ext4_fs_debug_features_inc(v);
+		droidboot_log(DROIDBOOT_LOG_ERROR, "sblock has unsupported features incompatible: %d\n", v);
 		return ENOTSUP;
 	}
 

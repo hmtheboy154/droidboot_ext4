@@ -57,6 +57,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <droidboot_error.h>
+#include <droidboot_logging.h>
+
 /**@brief   Mount point OS dependent lock*/
 #define EXT4_MP_LOCK(_m)                                                       \
 	do {                                                                   \
@@ -375,8 +378,10 @@ int ext4_mount(const char *dev_name, const char *mount_point,
 	if (mp_len > CONFIG_EXT4_MAX_MP_NAME)
 		return EINVAL;
 
-	if (mount_point[mp_len - 1] != '/')
+	if (mount_point[mp_len - 1] != '/'){
+	    droidboot_log(DROIDBOOT_LOG_ERROR, "mount_point should end with /\n");
 		return ENOTSUP;
+	}
 
 	for (size_t i = 0; i < CONFIG_EXT4_BLOCKDEVS_COUNT; ++i) {
 		if (!strcmp(dev_name, s_bdevices[i].name)) {
@@ -423,9 +428,11 @@ int ext4_mount(const char *dev_name, const char *mount_point,
 		return r;
 	}
 
-	if (bsize != bc->itemsize)
+	if (bsize != bc->itemsize){
+	    droidboot_log(DROIDBOOT_LOG_ERROR, "Wrong blocksize\n");
 		return ENOTSUP;
-
+    }
+    
 	/*Bind block cache to block device*/
 	r = ext4_block_bind_bcache(bd, bc);
 	if (r != EOK) {
