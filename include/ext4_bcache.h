@@ -45,6 +45,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <libc-hack.h>
 #include <misc/tree.h>
 #include <misc/queue.h>
 
