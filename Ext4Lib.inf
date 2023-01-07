@@ -1,0 +1,40 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = Ext4Lib
+  FILE_GUID                      = C81C27DB-A12C-416F-B3BF-419E6A28A2E4
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = Ext4Lib
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  droidboot.dec
+
+[LibraryClasses]
+  droidbootLibcHack
+
+[Sources]
+  ext4.c
+  ext4_balloc.c
+  ext4_bcache.c
+  ext4_bitmap.c
+  ext4_block_group.c
+  ext4_blockdev.c
+  ext4_crc32.c
+  ext4_debug.c
+  ext4_dir.c
+  ext4_dir_idx.c
+  ext4_extent.c
+  ext4_fs.c
+  ext4_hash.c
+  ext4_ialloc.c
+  ext4_inode.c
+  ext4_journal.c
+  ext4_mbr.c
+  ext4_mkfs.c
+  ext4_super.c
+  ext4_trans.c
+  ext4_xattr.c
+
