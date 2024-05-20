@@ -53,6 +53,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef PLATFORM_UBOOT
+#include <sort.h>
+#endif
+
 /**@brief Get hash version used in directory index.
  * @param root_info Pointer to root info structure of index
  * @return Hash algorithm version
